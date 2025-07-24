@@ -4,7 +4,9 @@ import Spring_Boot.identity_service.dto.request.UserCreateRequest;
 import Spring_Boot.identity_service.dto.request.UserUpdateRequest;
 import Spring_Boot.identity_service.dto.response.UserResponse;
 import Spring_Boot.identity_service.entity.User;
+import Spring_Boot.identity_service.mapper.UserMapper;
 import Spring_Boot.identity_service.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,31 +16,24 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository,UserMapper userMapper,PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.userMapper=userMapper;
+        this.passwordEncoder=passwordEncoder;
     }
     public UserResponse createUser(UserCreateRequest request){
         if (userRepository.existsByUsername(request.getUsername())){
             throw new RuntimeException("Username da ton tai");
         }
-        User user=new User();
-        user.setUsername(request.getUsername());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setPassword(request.getPassword());
-        user.setDob(request.getDob());
+        User user=userMapper.toUser(request);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         userRepository.save(user);
-        return convertToUser(user);
+        return userMapper.toUserResponse(user);
     }
-    public UserResponse convertToUser(User user){
-        UserResponse response=new UserResponse();
-        response.setUsername(user.getUsername());
-        response.setFirstName(user.getFirstName());
-        response.setLastName(user.getLastName());
-        response.setDob(user.getDob());
-        return response;
-    }
+
     public Optional<User> getUserById(long id){
         return userRepository.findById(id);
 
@@ -49,16 +44,12 @@ public class UserService {
             throw new RuntimeException("user ko ton tai voi id="+id);
         }
         User existingUser=user.get();
-        return convertToUser(existingUser);
+        return userMapper.toUserResponse(existingUser);
     }
     public List<UserResponse>getAllUser(){
         List<User>listUsers=userRepository.findAll();
-        List<UserResponse>listUserResponse=new ArrayList<>();
-        for (User user:listUsers){
-            UserResponse userResponse=convertToUser(user);
-            listUserResponse.add(userResponse);
-        }
-        return listUserResponse;
+        return userMapper.toUserResponseList(listUsers);
+
     }
     public UserResponse updateUser(UserUpdateRequest request){
         Optional<User> getUser=getUserById(request.getId());
@@ -66,12 +57,10 @@ public class UserService {
             throw new RuntimeException("ko ton tai User voi id="+request.getId());
         }
         User existingUser= getUser.get();
-
-        existingUser.setFirstName(request.getFirstName());
-        existingUser.setLastName(request.getLastName());
-        existingUser.setDob(request.getDob());
+        userMapper.updateUserFromRequest(request,existingUser);
+        existingUser.setPassword(passwordEncoder.encode(request.getPassword()));
         userRepository.save(existingUser);
-        return convertToUser(existingUser);
+        return userMapper.toUserResponse(existingUser);
     }
     public void deleteUserById(long id){
         Optional<User> existingUser=getUserById(id);
