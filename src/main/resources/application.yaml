@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: identity-service
+
+  datasource:
+    url: jdbc:mysql://localhost:3309/identity-service?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
