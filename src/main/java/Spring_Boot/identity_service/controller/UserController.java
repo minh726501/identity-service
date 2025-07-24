@@ -4,6 +4,7 @@ import Spring_Boot.identity_service.dto.request.UserCreateRequest;
 import Spring_Boot.identity_service.dto.request.UserUpdateRequest;
 import Spring_Boot.identity_service.dto.response.UserResponse;
 import Spring_Boot.identity_service.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +19,7 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public ResponseEntity<UserResponse>createUser(@RequestBody UserCreateRequest request){
+    public ResponseEntity<UserResponse>createUser(@RequestBody @Valid UserCreateRequest request){
         return ResponseEntity.ok(userService.createUser(request));
     }
     @GetMapping("/users/{id}")
@@ -30,7 +31,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUser());
     }
     @PutMapping("/users")
-    public ResponseEntity<UserResponse>updateUser(@RequestBody UserUpdateRequest request){
+    public ResponseEntity<UserResponse>updateUser(@RequestBody @Valid UserUpdateRequest request){
         return ResponseEntity.ok(userService.updateUser(request));
     }
     @DeleteMapping("/users/{id}")

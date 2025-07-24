@@ -19,6 +19,9 @@ public class UserService {
         this.userRepository = userRepository;
     }
     public UserResponse createUser(UserCreateRequest request){
+        if (userRepository.existsByUsername(request.getUsername())){
+            throw new RuntimeException("Username da ton tai");
+        }
         User user=new User();
         user.setUsername(request.getUsername());
         user.setFirstName(request.getFirstName());
