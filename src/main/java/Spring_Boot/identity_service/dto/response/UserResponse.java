@@ -1,5 +1,6 @@
 package Spring_Boot.identity_service.dto.response;
 
+import Spring_Boot.identity_service.entity.Role;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,4 +13,5 @@ public class UserResponse {
     private String firstName;
     private String lastName;
     private LocalDate dob;
+    private Role role;
 }

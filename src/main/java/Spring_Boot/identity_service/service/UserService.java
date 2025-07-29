@@ -3,8 +3,10 @@ package Spring_Boot.identity_service.service;
 import Spring_Boot.identity_service.dto.request.UserCreateRequest;
 import Spring_Boot.identity_service.dto.request.UserUpdateRequest;
 import Spring_Boot.identity_service.dto.response.UserResponse;
+import Spring_Boot.identity_service.entity.Role;
 import Spring_Boot.identity_service.entity.User;
 import Spring_Boot.identity_service.mapper.UserMapper;
+import Spring_Boot.identity_service.repository.RoleRepository;
 import Spring_Boot.identity_service.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,18 +19,23 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final RoleRepository repository;
 
-    public UserService(UserRepository userRepository,UserMapper userMapper,PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, UserMapper userMapper, PasswordEncoder passwordEncoder, RoleRepository repository) {
         this.userRepository = userRepository;
-        this.userMapper=userMapper;
-        this.passwordEncoder=passwordEncoder;
+        this.userMapper = userMapper;
+        this.passwordEncoder = passwordEncoder;
+        this.repository = repository;
     }
+
     public UserResponse createUser(UserCreateRequest request){
         if (userRepository.existsByUsername(request.getUsername())){
             throw new RuntimeException("Username da ton tai");
         }
         User user=userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        Role defaultRole= repository.findByName("USER");
+        user.setRole(defaultRole);
         userRepository.save(user);
         return userMapper.toUserResponse(user);
     }

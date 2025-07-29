@@ -6,12 +6,15 @@ import Spring_Boot.identity_service.dto.response.UserResponse;
 import Spring_Boot.identity_service.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@PreAuthorize("hasRole('ADMIN')")
 public class UserController {
+
     private final UserService userService;
 
     public UserController(UserService userService) {
