@@ -8,9 +8,9 @@ import Spring_Boot.identity_service.entity.User;
 import Spring_Boot.identity_service.mapper.UserMapper;
 import Spring_Boot.identity_service.repository.RoleRepository;
 import Spring_Boot.identity_service.repository.UserRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -74,5 +74,14 @@ public class UserService {
             throw new RuntimeException("ko ton tai User voi id="+id);
         }
         userRepository.deleteById(id);
+    }
+    public UserResponse getMyInfo(){
+        var context=SecurityContextHolder.getContext();
+        String name=context.getAuthentication().getName();
+        User user=userRepository.findByUsername(name);
+        if (user==null){
+            throw new RuntimeException("username ko ton tai");
+        }
+        return userMapper.toUserResponse(user);
     }
 }
