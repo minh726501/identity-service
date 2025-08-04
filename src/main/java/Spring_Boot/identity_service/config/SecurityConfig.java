@@ -59,7 +59,10 @@ public class SecurityConfig {
                         )
                         .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
 
-                );
+
+                )
+                .logout(logout -> logout.disable());  // Tắt logout mặc định;
+
 
         return http.build();
     }

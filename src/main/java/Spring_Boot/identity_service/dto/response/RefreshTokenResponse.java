@@ -4,10 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
 @Setter
+@Getter
 @AllArgsConstructor
-public class LoginResponse {
+public class RefreshTokenResponse {
     private String accessToken;
-    private String refreshToken;
 }

@@ -18,5 +18,6 @@ spring:
 
 jwt:
   secret: TfoE5XGZnb7FLNJNdLupwTXgtLYmLtr5FxmgAp4kRCFH7bhEQJ1KIq40RC4LIWa6=
-  expiration: 3600000  # 1h
+  access-token-expiration: 900000       # 15 phút
+  refresh-token-expiration: 604800000 # 1h
 
