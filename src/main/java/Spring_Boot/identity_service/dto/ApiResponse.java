@@ -1,5 +1,6 @@
 package Spring_Boot.identity_service.dto;
 
+import Spring_Boot.identity_service.dto.response.PaginationInfo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,11 +13,25 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 @Setter
 @Getter
-@AllArgsConstructor
 public class ApiResponse<T> implements ResponseBodyAdvice {
     private int status;
     private String message;
     private T data;
+    private PaginationInfo pagination;
+
+    public ApiResponse(int status, String message, T data) {
+        this.status = status;
+        this.message = message;
+        this.data = data;
+    }
+
+    public ApiResponse(int status, String message, T data, PaginationInfo pagination) {
+        this.status = status;
+        this.message = message;
+        this.data = data;
+        this.pagination = pagination;
+    }
+
     @Override
     public boolean supports(MethodParameter returnType, Class converterType) {
         return true;

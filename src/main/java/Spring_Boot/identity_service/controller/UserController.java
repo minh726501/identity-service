@@ -1,5 +1,5 @@
 package Spring_Boot.identity_service.controller;
-
+import Spring_Boot.identity_service.dto.ApiResponse;
 import Spring_Boot.identity_service.dto.request.UserCreateRequest;
 import Spring_Boot.identity_service.dto.request.UserUpdateRequest;
 import Spring_Boot.identity_service.dto.response.UserResponse;
@@ -21,23 +21,23 @@ public class UserController {
     }
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/users")
-    public ResponseEntity<UserResponse>createUser(@RequestBody @Valid UserCreateRequest request){
-        return ResponseEntity.ok(userService.createUser(request));
+    public ResponseEntity<ApiResponse<UserResponse>>createUser(@RequestBody @Valid UserCreateRequest request){
+        return ResponseEntity.ok(new ApiResponse<>(200,"Create User Success",userService.createUser(request)));
     }
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/users/{id}")
-    public ResponseEntity<UserResponse>getUserById(@PathVariable long id){
-        return ResponseEntity.ok(userService.findUserById(id));
+    public ResponseEntity<ApiResponse<UserResponse>>getUserById(@PathVariable long id){
+        return ResponseEntity.ok(new ApiResponse<>(200,"Fetch User By Id Success",userService.findUserById(id)));
     }
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/users")
-    public ResponseEntity<List<UserResponse>>getAllUser(){
-        return ResponseEntity.ok(userService.getAllUser());
+    public ResponseEntity<ApiResponse<List<UserResponse>>>getAllUser(@RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size){
+        return ResponseEntity.ok(userService.getAllUser(page,size));
     }
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/users")
-    public ResponseEntity<UserResponse>updateUser(@RequestBody @Valid UserUpdateRequest request){
-        return ResponseEntity.ok(userService.updateUser(request));
+    public ResponseEntity<ApiResponse<UserResponse>>updateUser(@RequestBody @Valid UserUpdateRequest request){
+        return ResponseEntity.ok(new ApiResponse<>(200,"Update User Success",userService.updateUser(request)));
     }
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/users/{id}")

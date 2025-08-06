@@ -1,13 +1,18 @@
 package Spring_Boot.identity_service.service;
 
+import Spring_Boot.identity_service.dto.ApiResponse;
 import Spring_Boot.identity_service.dto.request.UserCreateRequest;
 import Spring_Boot.identity_service.dto.request.UserUpdateRequest;
+import Spring_Boot.identity_service.dto.response.PaginationInfo;
 import Spring_Boot.identity_service.dto.response.UserResponse;
 import Spring_Boot.identity_service.entity.Role;
 import Spring_Boot.identity_service.entity.User;
 import Spring_Boot.identity_service.mapper.UserMapper;
 import Spring_Boot.identity_service.repository.RoleRepository;
 import Spring_Boot.identity_service.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -52,10 +57,20 @@ public class UserService {
         User existingUser=user.get();
         return userMapper.toUserResponse(existingUser);
     }
-    public List<UserResponse>getAllUser(){
-        List<User>listUsers=userRepository.findAll();
-        return userMapper.toUserResponseList(listUsers);
-
+    public ApiResponse<List<UserResponse>>getAllUser(Integer page, Integer size){
+        List<User> users;
+        PaginationInfo pagination;
+        if (page!=null&&size!=null){
+            Pageable pageable=PageRequest.of(page-1,size);
+            Page<User>userPage=userRepository.findAll(pageable);
+            users=userPage.getContent();
+            pagination=new PaginationInfo(userPage.getNumber()+1,userPage.getSize(),userPage.getTotalPages(),userPage.getTotalElements());
+        }else {
+            users = userRepository.findAll();
+            pagination = new PaginationInfo(1, users.size(), 1, users.size());
+        }
+        List<UserResponse>data=userMapper.toUserResponseList(users);
+        return new ApiResponse<>(200,"Fetch All User Success",data,pagination);
     }
     public UserResponse updateUser(UserUpdateRequest request){
         Optional<User> getUser=getUserById(request.getId());
