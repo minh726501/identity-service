@@ -3,6 +3,7 @@ import Spring_Boot.identity_service.dto.ApiResponse;
 import Spring_Boot.identity_service.dto.request.UserCreateRequest;
 import Spring_Boot.identity_service.dto.request.UserUpdateRequest;
 import Spring_Boot.identity_service.dto.response.UserResponse;
+import Spring_Boot.identity_service.entity.User;
 import Spring_Boot.identity_service.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,7 @@ public class UserController {
     }
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/users")
-    public ResponseEntity<ApiResponse<List<UserResponse>>>getAllUser(@RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size){
+    public ResponseEntity<ApiResponse<List<UserResponse>>>getAllUser(@RequestParam(required = false)int page,@RequestParam(required = false) int size){
         return ResponseEntity.ok(userService.getAllUser(page,size));
     }
     @PreAuthorize("hasRole('ADMIN')")
@@ -49,6 +50,14 @@ public class UserController {
     @GetMapping("/myInfo")
     public ResponseEntity<UserResponse>getInfo(){
         return ResponseEntity.ok(userService.getMyInfo());
+    }
+    @GetMapping("users/search")
+    public ResponseEntity<ApiResponse<List<UserResponse>>>searchUser(@RequestParam(required = false)String username,
+                                                                     @RequestParam(required = false)String firstName,
+                                                                     @RequestParam(required = false)String lastName,
+                                                                     @RequestParam(required = false,defaultValue = "1")int page,
+                                                                     @RequestParam(required = false,defaultValue = "10")int size){
+        return ResponseEntity.ok(userService.searchUser(username,firstName,lastName,page,size));
     }
 
 }

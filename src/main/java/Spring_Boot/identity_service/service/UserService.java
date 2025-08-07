@@ -99,4 +99,13 @@ public class UserService {
         }
         return userMapper.toUserResponse(user);
     }
+    public ApiResponse<List<UserResponse>>searchUser(String username,String firstName,String lastName,Integer page,Integer size){
+        Pageable pageable=PageRequest.of(page-1,size);
+       Page<User>userPage=userRepository.searchUser(username,firstName,lastName,pageable);
+       List<User>users=userPage.getContent();
+       PaginationInfo paginationInfo=new PaginationInfo(userPage.getNumber()+1,userPage.getSize(),userPage.getTotalPages(),userPage.getTotalElements());
+       List<UserResponse>data=userMapper.toUserResponseList(users);
+        return new ApiResponse<>(200,"Fetch All User Success",data,paginationInfo);
+
+    }
 }
