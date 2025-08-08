@@ -1,6 +1,7 @@
 package Spring_Boot.identity_service.service;
 
 import Spring_Boot.identity_service.dto.ApiResponse;
+import Spring_Boot.identity_service.dto.request.ChangePasswordRequest;
 import Spring_Boot.identity_service.dto.request.UserCreateRequest;
 import Spring_Boot.identity_service.dto.request.UserUpdateRequest;
 import Spring_Boot.identity_service.dto.response.PaginationInfo;
@@ -106,6 +107,16 @@ public class UserService {
        PaginationInfo paginationInfo=new PaginationInfo(userPage.getNumber()+1,userPage.getSize(),userPage.getTotalPages(),userPage.getTotalElements());
        List<UserResponse>data=userMapper.toUserResponseList(users);
         return new ApiResponse<>(200,"Fetch All User Success",data,paginationInfo);
-
+    }
+    public void changePassword(ChangePasswordRequest request,String username){
+        User user=userRepository.findByUsername(username);
+        if (user==null){
+            throw new RuntimeException("username ko ton tai");
+        }
+        if (!passwordEncoder.matches(request.getOldPassword(),user.getPassword())){
+            throw new RuntimeException("Old password không đúng !");
+        }
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
     }
 }
