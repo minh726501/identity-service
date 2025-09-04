@@ -14,6 +14,7 @@ public class UserCreateRequest {
     @NotBlank(message = "Password not null")
     @Size(min = 6,message = "Password phai co 6 ki tu tro len")
     private String password;
+    private String email;
     private String firstName;
     private String lastName;
     private LocalDate dob;

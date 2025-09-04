@@ -1,16 +1,16 @@
 package Spring_Boot.identity_service.controller;
 
 import Spring_Boot.identity_service.dto.ApiResponse;
-import Spring_Boot.identity_service.dto.request.ChangePasswordRequest;
-import Spring_Boot.identity_service.dto.request.LoginDTO;
-import Spring_Boot.identity_service.dto.request.RefreshTokenRequest;
+import Spring_Boot.identity_service.dto.request.*;
 import Spring_Boot.identity_service.dto.response.LoginResponse;
 import Spring_Boot.identity_service.dto.response.RefreshTokenResponse;
+import Spring_Boot.identity_service.entity.PasswordResetToken;
 import Spring_Boot.identity_service.entity.RefreshToken;
 import Spring_Boot.identity_service.entity.User;
 import Spring_Boot.identity_service.jwt.JwtService;
 import Spring_Boot.identity_service.repository.RefreshTokenRepository;
 import Spring_Boot.identity_service.repository.UserRepository;
+import Spring_Boot.identity_service.service.EmailService;
 import Spring_Boot.identity_service.service.RefreshTokenService;
 import Spring_Boot.identity_service.service.UserService;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +22,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
@@ -37,14 +38,16 @@ public class Auth {
     private final RefreshTokenRepository refreshTokenRepository;
     private final RefreshTokenService refreshTokenService;
     private final UserService userService;
+    private final EmailService emailService;
 
-    public Auth(AuthenticationManager authenticationManager, JwtService jwtUtil,UserRepository userRepository,RefreshTokenRepository refreshTokenRepository,RefreshTokenService refreshTokenService,UserService userService) {
+    public Auth(AuthenticationManager authenticationManager, JwtService jwtService, UserRepository userRepository, RefreshTokenRepository refreshTokenRepository, RefreshTokenService refreshTokenService, UserService userService, EmailService emailService) {
         this.authenticationManager = authenticationManager;
-        this.jwtService = jwtUtil;
-        this.userRepository=userRepository;
-        this.refreshTokenRepository=refreshTokenRepository;
-        this.refreshTokenService=refreshTokenService;
-        this.userService=userService;
+        this.jwtService = jwtService;
+        this.userRepository = userRepository;
+        this.refreshTokenRepository = refreshTokenRepository;
+        this.refreshTokenService = refreshTokenService;
+        this.userService = userService;
+        this.emailService = emailService;
     }
 
     @PostMapping("/login")
@@ -87,9 +90,19 @@ public class Auth {
         return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(),"Logout successful",null));
     }
     @PostMapping("/change-password")
-    public ResponseEntity<String>changePassword(@RequestBody ChangePasswordRequest request, Principal principal){
+    public ResponseEntity<ApiResponse<String>>changePassword(@RequestBody ChangePasswordRequest request, Principal principal){
         userService.changePassword(request,principal.getName());
-        return ResponseEntity.ok("Password changed successfully");
+        return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(), "Password changed successfully",null));
+    }
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ApiResponse<String>>forgotPassword(@RequestBody ForgotPasswordRequest request){
+        emailService.forgotPassword(request.getEmail());
+        return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(),"Otp code đã được gửi về email!",null));
+    }
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponse<String>>resetPassword(@RequestBody ResetPasswordRequest request){
+        emailService.resetPassword(request.getOtp(),request.getNewPassword());
+        return ResponseEntity.ok(new ApiResponse<>(HttpStatus.OK.value(),"Password reset successfully!",null));
     }
 
 }

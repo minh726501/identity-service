@@ -15,6 +15,17 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: qweasdzxcj01@gmail.com      # Gmail của bạn
+    password: smozaaveymzqhajq         # App password (không dùng mật khẩu Gmail thường)
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 jwt:
   secret: TfoE5XGZnb7FLNJNdLupwTXgtLYmLtr5FxmgAp4kRCFH7bhEQJ1KIq40RC4LIWa6=
